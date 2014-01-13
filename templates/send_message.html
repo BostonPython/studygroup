@@ -1,0 +1,21 @@
+<!doctype html>
+
+<head>
+    <title>Send Message To: {{ member['name'] }}</title>
+</head>
+
+<body>
+    <h3>Send Message To:</h3>
+    <h4>{{ member['name'] }}</h4>
+    <form method='POST'>
+
+        Subject: <br/>
+        <input type="text" name="subject"> <br/>
+
+        Message: <br/>
+        <textarea name="message"></textarea> <br/>
+
+        <input type="hidden" name="member_id" value="{{ member['id'] }}" />
+        <input type="submit" value="Submit" />
+    </form>
+</body>

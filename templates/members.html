@@ -1,0 +1,18 @@
+<!doctype html>
+
+<head>
+    <title>PyBoston Meetup Members</title>
+</head>
+
+<body>
+    <ul>
+    {% for member in members %}
+        <li>{{ member['name'] }} |
+            <a href="{{ url_for('send_message', member_id=member['id']) }}">
+                Send Message</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('members', offset=next_offset) }}">
+        Next Page</a>
+</body>
