@@ -1,0 +1,86 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Studygroup | a Boston Python Project{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='css/jumbotron-narrow.css')}}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="header">
+            <ul class="nav nav-pills pull-right">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="{{ url_for('show_groups') }}">Groups</a></li>
+                <li><a href="{{ url_for('show_members') }}">Members</a></li>
+                {% if g.user %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% endif %}
+            </ul>
+            <h3 class="text-muted">Studygroup</h3>
+        </div>
+
+        <div class="jumbotron">
+            <h1>Studygroup</h1>
+
+            <p class="lead">
+                Create and manage small groups inside the Boston Python Usergroup
+            </p>
+
+            {% if not g.user %}
+            <p>
+                <a class="btn btn-lg btn-success"
+                   href="{{ url_for('login') }}"
+                   role="button">Sign In Now</a>
+            </p>
+            {% else %}
+            <p>
+                Welcome, {{ g.user.full_name }}
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="row marketing">
+            <div class="col-lg-6">
+                <h4>Subheading</h4>
+
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas
+                    faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+                    Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Maecenas sed diam eget risus varius blandit sit amet non
+                    magna.</p>
+            </div>
+
+            <div class="col-lg-6">
+                <h4>Subheading</h4>
+
+                <p>Donec id elit non mi porta gravida at eget metus. Maecenas
+                    faucibus mollis interdum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+                    Cras mattis consectetur purus sit amet fermentum.</p>
+
+                <h4>Subheading</h4>
+
+                <p>Maecenas sed diam eget risus varius blandit sit amet non
+                    magna.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; Boston Python Usergroup 2014</p>
+        </div>
+
+    </div> <!-- /container -->
+
+{% endblock %}

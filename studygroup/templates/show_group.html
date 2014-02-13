@@ -1,0 +1,38 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Studygroup | Groups{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet"
+      href="{{url_for('.static', filename='css/jumbotron-narrow.css')}}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="header">
+            <ul class="nav nav-pills pull-right">
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="active"><a href="{{ url_for('show_groups') }}">Groups</a></li>
+                <li><a href="{{ url_for('show_members') }}">Members</a></li>
+                {% if g.user %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% endif %}
+            </ul>
+            <h3 class="text-muted">Studygroup</h3>
+        </div>
+
+        <div class="page-header">
+            <h1>{{ g.group.name }}</h1>
+        </div>
+
+        <div>
+            {{ g.group.description }}
+        </div>
+
+        <div class="footer">
+            <p>&copy; Boston Python Usergroup 2014</p>
+        </div>
+
+    </div> <!-- /container -->
+
+{% endblock %}
