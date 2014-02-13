@@ -37,3 +37,6 @@ nosetests.xml
 
 # Config
 settings_local.py*
+
+# PyCharm
+.idea
