@@ -40,7 +40,7 @@ def new_group():
 
 @app.route('/join_group', methods=('POST',))
 def join_group():
-
+    pass
 
 
 @app.route('/members')
