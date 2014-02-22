@@ -25,12 +25,12 @@ def show_groups():
     g.groups = Group.all_with_memberships()
     return render_template('groups.html')
 
-@app.route('/show_group/<id>')
+@app.route('/group/<id>')
 def show_group(id):
     g.group = Group.query.filter_by(id=id).first()
     return render_template('show_group.html')
 
-@app.route('/new_group', methods=('GET', 'POST'))
+@app.route('/group/new', methods=('GET', 'POST'))
 def new_group():
     form = GroupForm()
     if form.validate_on_submit():
