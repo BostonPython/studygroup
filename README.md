@@ -39,7 +39,9 @@ development machine so that it pretends to be
 
         127.0.0.1   dev_studygroup.bostonpython.com
 
-6. Start the server with:  sudo python run_server.py
+6. Start the server:
+
+        $ sudo python run_server.py
 
 7. Visit the page in your browser using the URL http://dev_studygroup.bostonpython.com.
     You should see the Study Group page, and your server window should show
