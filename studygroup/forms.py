@@ -3,8 +3,10 @@ from flask_wtf import Form
 from wtforms import TextField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
-from models import db, Group, Membership, ROLE_GROUP_LEADER
-from studygroup.exceptions import GroupFullException
+
+from .application import db
+from .models import Group, Membership, ROLE_GROUP_LEADER
+from .exceptions import GroupFullException
 
 
 class GroupForm(Form):

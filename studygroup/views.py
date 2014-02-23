@@ -1,10 +1,10 @@
 from flask import (g, request, redirect, render_template,
                    session, url_for, jsonify, Blueprint)
 
-from models import db, User, Group
-from application import meetup
-from auth import login_required
-from forms import GroupForm
+from .models import User, Group
+from .application import db, meetup
+from .auth import login_required
+from .forms import GroupForm
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
 

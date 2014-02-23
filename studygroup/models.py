@@ -1,9 +1,9 @@
+"""
+Data models for StudyGroups
+"""
 
-from flask.ext.sqlalchemy import SQLAlchemy
-
+from .application import db
 import settings
-
-db = SQLAlchemy()
 
 ROLE_MEMBER = 1
 ROLE_GROUP_LEADER = 10

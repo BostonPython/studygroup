@@ -1,13 +1,15 @@
 from flask import Flask
 from flask_oauthlib.client import OAuth
 from flask_bootstrap import Bootstrap
+from flask.ext.sqlalchemy import SQLAlchemy
+
 import settings
 
 
+db = SQLAlchemy()
 oauth = OAuth()
 
 def create_app(debug=True):
-    from models import db
     from views import studygroup
 
     app = Flask(__name__)

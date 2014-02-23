@@ -1,8 +1,8 @@
 from flask.ext.script import Manager
-from studygroup.application import app, db
+from studygroup.application import create_app, db
 
-manager = Manager(app)
 
+manager = Manager(create_app)
 
 @manager.command
 def create_tables():
