@@ -37,7 +37,7 @@ def new_group():
     form = GroupForm()
     if form.validate_on_submit():
         group = form.save()
-        return redirect(url_for('studygroup.show_group', id=group.id))
+        return redirect(url_for('.show_group', id=group.id))
     return render_template('new_group.html', form=form)
 
 @studygroup.route('/join_group', methods=('POST',))
@@ -69,13 +69,13 @@ def show_members(offset=None):
     #         members=me.data['results'],
     #         next_offset=offset + 1)
     #
-    # return redirect(url_for('studygroup.login'))
+    # return redirect(url_for('.login'))
 
 
 @studygroup.route('/send_message/<int:member_id>', methods=['GET', 'POST'])
 def send_message(member_id):
     if 'meetup_token' not in session:
-        return redirect(url_for('studygroup.login'))
+        return redirect(url_for('.login'))
 
     if request.method == 'GET':
         member = current_app.meetup.get('2/member/%s' % member_id)
@@ -105,7 +105,7 @@ def login():
 @studygroup.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('studygroup.index'))
+    return redirect(url_for('.index'))
 
 
 @studygroup.route('/login/authorized')
@@ -132,7 +132,7 @@ def authorized(resp):
         db.session.commit()
 
     session['user_id'] = user.id
-    return redirect(url_for('studygroup.index'))
+    return redirect(url_for('.index'))
 
 
 @meetup.tokengetter

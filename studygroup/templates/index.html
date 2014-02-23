@@ -12,10 +12,10 @@
         <div class="header">
             <ul class="nav nav-pills pull-right">
                 <li class="active"><a href="#">Home</a></li>
-                <li><a href="{{ url_for('studygroup.show_groups') }}">Groups</a></li>
-                <li><a href="{{ url_for('studygroup.show_members') }}">Members</a></li>
+                <li><a href="{{ url_for('.show_groups') }}">Groups</a></li>
+                <li><a href="{{ url_for('.show_members') }}">Members</a></li>
                 {% if g.user %}
-                <li><a href="{{ url_for('studygroup.logout') }}">Logout</a></li>
+                <li><a href="{{ url_for('.logout') }}">Logout</a></li>
                 {% endif %}
             </ul>
             <h3 class="text-muted">Studygroup</h3>
@@ -31,7 +31,7 @@
             {% if not g.user %}
             <p>
                 <a class="btn btn-lg btn-success"
-                   href="{{ url_for('studygroup.login') }}"
+                   href="{{ url_for('.login') }}"
                    role="button">Sign In Now</a>
             </p>
             {% else %}
