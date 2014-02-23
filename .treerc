@@ -1,0 +1,11 @@
+# .treerc for studygroup: controls what files get searched.
+[default]
+ignore =
+    .treerc
+    build
+    htmlcov
+    .tox* 
+    .coverage*
+    *.min.js
+    _build
+    *.egg *.egg-info
