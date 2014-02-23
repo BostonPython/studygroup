@@ -78,10 +78,10 @@ def send_message(member_id):
         return redirect(url_for('.login'))
 
     if request.method == 'GET':
-        member = current_app.meetup.get('2/member/%s' % member_id)
+        member = meetup.get('2/member/%s' % member_id)
         return render_template("send_message.html", member=member.data)
     elif request.method == 'POST':
-        response = current_app.meetup.post(
+        response = meetup.post(
             '2/message',
             data={
                 'subject': request.form['subject'],
@@ -99,7 +99,7 @@ def boom():
 
 @studygroup.route('/login')
 def login():
-    return current_app.meetup.authorize(callback=url_for('studygroup.authorized', _external=True))
+    return meetup.authorize(callback=url_for('.authorized', _external=True))
 
 
 @studygroup.route('/logout')

@@ -23,6 +23,7 @@ def create_app(debug=True):
 
     return app
 
+
 meetup = oauth.remote_app(
     'meetup',
     consumer_key=settings.MEETUP_OAUTH_KEY,
@@ -33,5 +34,3 @@ meetup = oauth.remote_app(
     access_token_url='https://secure.meetup.com/oauth2/access',
     authorize_url='https://secure.meetup.com/oauth2/authorize'
 )
-
-from views import *
