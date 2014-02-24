@@ -1,7 +1,8 @@
 studygroup
 ==========
 
-Prototype Application to allow creation of study groups within a given Meetup group
+Prototype application to allow creation of study groups within a given Meetup
+group.
 
 
 Developing
@@ -49,3 +50,12 @@ development machine so that it pretends to be
 
 8. If you click the Sign In Now button, it should take you to meetup.com and
     ask you to authorize Boston Python Study Groups.
+
+
+Running tests
+=============
+
+Tests are run with unittest in the standard library:
+
+        $ python -m unittest discover
+
