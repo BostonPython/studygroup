@@ -11,16 +11,16 @@ Developing
 Study Group uses OAuth authentication with meetup.com, so you will need to
 configure to be able to perform that authentication.  You will run your
 development machine so that it pretends to be
-"dev_studygroup.bostonpython.com":
+"dev-studygroup.bostonpython.com":
 
 1. Go to http://www.meetup.com/meetup_api/, and click "OAuth Consumers".
 
 2. Create a new consumer, with these details:
 
         Consumer Name: Boston Python Study Groups
-        Application Website: http://dev_studygroup.bostonpython.com
-        De-authorization URL: http://dev_studygroup.bostonpython.com/deauth
-        Redirect URI: http://dev_studygroup.bostonpython.com/
+        Application Website: http://dev-studygroup.bostonpython.com
+        De-authorization URL: http://dev-studygroup.bostonpython.com/deauth
+        Redirect URI: http://dev-studygroup.bostonpython.com/
 
 3. Create a settings_local.py alongside settings.py, with details from the
     OAuth consumer you just created:
@@ -35,16 +35,16 @@ development machine so that it pretends to be
         $ sudo python manage.py create_tables
 
 5. You have to be able to visit your dev machine using the domain name
-    "dev_studygroup.bostonpython.com".  The simplest way to do this is to edit
+    "dev-studygroup.bostonpython.com".  The simplest way to do this is to edit
     /etc/hosts.  Add this line to the file:
 
-        127.0.0.1   dev_studygroup.bostonpython.com
+        127.0.0.1   dev-studygroup.bostonpython.com
 
 6. Start the server:
 
         $ sudo python run_server.py
 
-7. Visit the page in your browser using the URL http://dev_studygroup.bostonpython.com.
+7. Visit the page in your browser using the URL http://dev-studygroup.bostonpython.com.
     You should see the Study Group page, and your server window should show
     URLs being served.
 
