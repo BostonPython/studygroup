@@ -42,3 +42,4 @@ class GroupCreationTest(StudyGroupTestCase):
         self.assertEqual(g1.name, "The Group")
         self.assertEqual(g1.description, "A group!")
         self.assertEqual(g1.max_members, 10)
+        self.assertEqual(g1.status.name, 'proposed')

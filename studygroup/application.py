@@ -9,6 +9,21 @@ import settings
 db = SQLAlchemy()
 oauth = OAuth()
 
+
+def create_baseline_data():
+    from studygroup.models import GroupStatus
+    group_statuses = [
+        ('proposed', 'Proposed'),
+        ('active', 'Active'),
+        ('inactive', 'Inactive'),
+    ]
+    for name, display in group_statuses:
+        if not db.session.query(GroupStatus).filter(GroupStatus.name == name).first():
+            db.session.add(GroupStatus(name=name, display=display))
+
+    db.session.commit()
+
+
 def create_app(debug=True):
     from views import studygroup
 
