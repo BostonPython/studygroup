@@ -1,6 +1,7 @@
 """
 Data models for StudyGroups
 """
+from sqlalchemy.sql import select
 
 from .application import db
 import settings
@@ -25,14 +26,25 @@ class Membership(db.Model):
     role = db.Column(db.Integer, nullable=False, default=ROLE_MEMBER)
 
 
+class GroupStatus(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+    display = db.Column(db.String, nullable=False)
+
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
     description = db.Column(db.String)
     max_members = db.Column(db.Integer, nullable=False,
                             default=settings.DEFAULT_MAX_MEMBERS)
+    status_id = db.Column(db.Integer, db.ForeignKey('group_status.id'),
+                          nullable=False,
+                          default=select([GroupStatus.__table__.c.id]).
+                                  where(GroupStatus.__table__.c.name == 'proposed'))
 
     memberships = db.relationship('Membership', backref='group')
+    status = db.relationship('GroupStatus')
 
     @classmethod
     def all_with_memberships(cls):

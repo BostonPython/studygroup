@@ -7,7 +7,7 @@ import os.path
 import flask.ext.migrate
 from flask.ext.testing import TestCase
 
-from studygroup.application import create_app, db
+from studygroup.application import create_app, db, create_baseline_data
 from studygroup.models import User
 
 
