@@ -15,7 +15,8 @@ class StudyGroupTestCase(TestCase):
     def setUp(self):
         db.create_all()
         create_baseline_data()
-        self.alice_id = self.create_user(full_name="Alice B. Admin")
+        self.alice_id = self.create_user(full_name='Alice B.')
+        self.admin_id = self.create_user(full_name='Bob Admin', is_admin=True)
 
     def tearDown(self):
         db.session.remove()
