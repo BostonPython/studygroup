@@ -2,7 +2,8 @@ from flask import url_for
 
 from .tools import StudyGroupTestCase
 
-from studygroup.models import Group
+from studygroup.application import db
+from studygroup.models import Group, GroupStatus
 
 
 class HomePageTest(StudyGroupTestCase):
@@ -43,3 +44,61 @@ class GroupCreationTest(StudyGroupTestCase):
         self.assertEqual(g1.description, "A group!")
         self.assertEqual(g1.max_members, 10)
         self.assertEqual(g1.status.name, 'proposed')
+
+
+class GroupListTest(StudyGroupTestCase):
+    def setUp(self):
+        super(GroupListTest, self).setUp()
+        self.proposed_group = Group(
+            name='Proposed Group',
+            description='Proposed Group',
+            status=db.session.query(GroupStatus).filter(GroupStatus.name == 'proposed').one())
+        db.session.add(self.proposed_group)
+
+        self.active_group = Group(
+            name='Active Group',
+            description='Active Group',
+            status=db.session.query(GroupStatus).filter(GroupStatus.name == 'active').one())
+        db.session.add(self.active_group)
+
+        db.session.commit()
+
+    def test_hide_proposed_from_non_admin(self):
+        self.login(self.alice_id)
+        resp = self.client.get(url_for('studygroup.show_groups'))
+
+        self.assert200(resp)
+        self.assertIn('Active Group', resp.data)
+        self.assertNotIn('Proposed Group', resp.data)
+
+    def test_show_proposed_to_admin(self):
+        self.login(self.admin_id)
+        resp = self.client.get(url_for('studygroup.show_groups'))
+
+        self.assert200(resp)
+        self.assertIn('Active Group', resp.data)
+        self.assertIn('Proposed Group', resp.data)
+
+
+class ShowGroupTest(StudyGroupTestCase):
+    def setUp(self):
+        super(ShowGroupTest, self).setUp()
+        self.proposed_group = Group(
+            name='Proposed Group',
+            description='Proposed Group',
+            status=db.session.query(GroupStatus).filter(GroupStatus.name == 'proposed').one())
+        db.session.add(self.proposed_group)
+
+        db.session.commit()
+
+    def test_hide_proposed_from_non_admin(self):
+        self.login(self.alice_id)
+        resp = self.client.get(url_for('studygroup.show_group', id=self.proposed_group.id))
+
+        self.assert404(resp)
+
+    def test_show_proposed_to_admin(self):
+        self.login(self.admin_id)
+        resp = self.client.get(url_for('studygroup.show_group', id=self.proposed_group.id))
+
+        self.assert200(resp)

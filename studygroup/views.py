@@ -1,5 +1,5 @@
 from flask import (g, request, redirect, render_template,
-                   session, url_for, jsonify, Blueprint)
+                   session, url_for, jsonify, Blueprint, abort)
 
 from .models import User, Group
 from .application import db, meetup
@@ -7,6 +7,7 @@ from .auth import login_required
 from .forms import GroupForm
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
+
 
 @studygroup.before_request
 def load_user():
@@ -21,16 +22,28 @@ def load_user():
 def index():
     return render_template('index.html')
 
+
 @studygroup.route('/groups')
 @login_required
 def show_groups():
-    g.groups = Group.all_with_memberships()
+    groups = Group.all_with_memberships()
+    if not g.user.is_admin:
+        groups = Group.filter_proposed(groups)
+    g.groups = groups
     return render_template('groups.html')
+
 
 @studygroup.route('/group/<id>')
 def show_group(id):
-    g.group = Group.query.filter_by(id=id).first()
+    groups = Group.query.filter_by(id=id)
+    if not g.user.is_admin:
+        groups = Group.filter_proposed(groups)
+    group = groups.first()
+    if not group:
+        abort(404)
+    g.group = group
     return render_template('show_group.html')
+
 
 @studygroup.route('/group/new', methods=('GET', 'POST'))
 def new_group():
@@ -39,6 +52,7 @@ def new_group():
         group = form.save()
         return redirect(url_for('.show_group', id=group.id))
     return render_template('new_group.html', form=form)
+
 
 @studygroup.route('/join_group', methods=('POST',))
 def join_group():
@@ -91,6 +105,7 @@ def send_message(member_id):
         return jsonify(response.data)
     else:
         return "Invalid Request", 500
+
 
 @studygroup.route('/boom')
 def boom():

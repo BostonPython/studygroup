@@ -48,12 +48,16 @@ class Group(db.Model):
 
     @classmethod
     def all_with_memberships(cls):
-        return Group.query.options(db.joinedload(Group.memberships)).all()
+        return Group.query.options(db.joinedload(Group.memberships))
 
     @classmethod
     def by_id_with_memberships(cls, id):
         return Group.query.filter_by(id=id)\
             .options(db.joinedload(Group.memberships)).first()
+
+    @staticmethod
+    def filter_proposed(query):
+        return query.join(GroupStatus).filter(GroupStatus.name != 'proposed')
 
     def is_full(self):
         return len(self.memberships) >= self.max_members
