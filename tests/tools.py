@@ -2,12 +2,9 @@
 Tools to help test StudyGroup.
 """
 
-import unittest
-
-from flask import session
 from flask.ext.testing import TestCase
 
-from studygroup.application import create_app, db
+from studygroup.application import create_app, db, create_baseline_data
 from studygroup.models import User
 
 
@@ -17,7 +14,9 @@ class StudyGroupTestCase(TestCase):
     """
     def setUp(self):
         db.create_all()
-        self.alice_id = self.create_user(full_name="Alice B. Admin")
+        create_baseline_data()
+        self.alice_id = self.create_user(full_name='Alice B.')
+        self.admin_id = self.create_user(full_name='Bob Admin', is_admin=True)
 
     def tearDown(self):
         db.session.remove()
