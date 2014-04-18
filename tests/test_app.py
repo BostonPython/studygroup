@@ -16,7 +16,7 @@ class HomePageTest(StudyGroupTestCase):
         self.login(self.alice_id)
         resp = self.client.get('/')
         self.assert200(resp)
-        self.assertIn('Welcome, Alice B. Admin', resp.data)
+        self.assertIn('Welcome, Alice B.', resp.data)
         self.assertNotIn('Sign In Now', resp.data)
 
 

@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_oauthlib.client import OAuth
 from flask_bootstrap import Bootstrap
+from flask.ext.migrate import Migrate
 from flask.ext.sqlalchemy import SQLAlchemy
 
 import settings
@@ -8,6 +9,7 @@ import settings
 
 db = SQLAlchemy()
 oauth = OAuth()
+migrate = Migrate()
 
 def create_app(debug=True):
     from views import studygroup
@@ -22,6 +24,7 @@ def create_app(debug=True):
     Bootstrap(app)
     db.init_app(app)
     oauth.init_app(app)
+    migrate.init_app(app, db)
 
     return app
 

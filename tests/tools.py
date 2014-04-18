@@ -2,13 +2,16 @@
 Tools to help test StudyGroup.
 """
 
-import unittest
+import os.path
 
-from flask import session
+import flask.ext.migrate
 from flask.ext.testing import TestCase
 
 from studygroup.application import create_app, db
 from studygroup.models import User
+
+
+DB_PATH = 'sqlite:///' + os.path.dirname(__file__) + '/../test.db'
 
 
 class StudyGroupTestCase(TestCase):
@@ -16,10 +19,12 @@ class StudyGroupTestCase(TestCase):
     Base class for all StudyGroup tests.
     """
     def setUp(self):
-        db.create_all()
-        self.alice_id = self.create_user(full_name="Alice B. Admin")
+        flask.ext.migrate.upgrade()
+        self.alice_id = self.create_user(full_name='Alice B.')
+        self.admin_id = self.create_user(full_name='Bob Admin', is_admin=True)
 
     def tearDown(self):
+        db.session.execute('DROP TABLE alembic_version')
         db.session.remove()
         db.drop_all()
 
@@ -30,8 +35,9 @@ class StudyGroupTestCase(TestCase):
         app = create_app()
         app.config['TESTING'] = True
         app.config['WTF_CSRF_ENABLED'] = False
-        # Use an in-memory SQLite db.
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+        # Use a SQLite db. Migrations will not work on an in-memory db.
+        app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH
+        app.config['SQLALCHEMY_POOL_SIZE'] = None
         return app
 
     def create_user(self, **kwargs):
@@ -39,6 +45,9 @@ class StudyGroupTestCase(TestCase):
         Make a new user, and return the user id.
         """
         user = User(**kwargs)
+        import sqlalchemy.schema
+        metadata = sqlalchemy.schema.MetaData()
+        metadata.reflect(db.session.bind)
         db.session.add(user)
         db.session.commit()
         return user.id
