@@ -1,6 +1,8 @@
 from wtforms import ValidationError
 from studygroup.exceptions import GroupFullException, MembershipException
 from studygroup.forms import MembershipForm
+from studygroup.application import db
+from studygroup.models import Group, Membership
 from tests.tools import StudyGroupTestCase
 import mock
 
@@ -104,4 +106,28 @@ class MembershipFormTest(StudyGroupTestCase):
 
 
 class MembershipModelTest(StudyGroupTestCase):
-    pass
+
+    def setUp(self):
+        super(MembershipModelTest, self).setUp()
+        self.group = Group(
+            name='group',
+            description='description'
+        )
+        db.session.add(self.group)
+        db.session.commit()
+
+    def test_group_user(self):
+        membership = Membership(
+            user_id=self.alice_id,
+            group_id=self.group.id
+        )
+
+        db.session.add(membership)
+        db.session.commit()
+
+        actual = Membership.by_group_and_user_ids(self.group.id, self.alice_id)
+        self.assertEqual(membership, actual)
+
+    def test_group_user_not_found(self):
+        actual = Membership.by_group_and_user_ids(self.group.id, self.alice_id,)
+        self.assertIsNone(actual)
