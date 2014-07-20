@@ -13,6 +13,10 @@ itsdangerous==0.23
 oauthlib==0.6.1
 psycopg2==2.5.2
 wsgiref==0.1.2
+lxml==3.3.5
+requests==2.3.0
+cssselect==0.9.1
+mock==1.0.1
 
 # Only for testing (separate out?)
 Flask-Testing==0.4

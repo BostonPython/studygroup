@@ -9,6 +9,7 @@ import settings
 db = SQLAlchemy()
 oauth = OAuth()
 
+
 def create_app(debug=True):
     from views import studygroup
 
