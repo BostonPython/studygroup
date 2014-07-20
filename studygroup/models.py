@@ -2,6 +2,7 @@
 Data models for StudyGroups
 """
 from sqlalchemy.sql import select
+from sqlalchemy import UniqueConstraint
 
 from .application import db
 import settings
@@ -25,6 +26,16 @@ class Membership(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     role = db.Column(db.Integer, nullable=False, default=ROLE_MEMBER)
 
+    __table_args__ = (
+        UniqueConstraint('user_id', 'group_id', name='_group_user_uc'),
+    )
+
+    @classmethod
+    def by_group_and_user_ids(cls, group_id, user_id):
+        return Membership.query.filter_by(
+            group_id=group_id,
+            user_id=user_id
+        )
 
 class GroupStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)

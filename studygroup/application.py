@@ -11,7 +11,6 @@ db = SQLAlchemy()
 oauth = OAuth()
 migrate = Migrate()
 
-
 def create_baseline_data():
     from studygroup.models import GroupStatus
     group_statuses = [

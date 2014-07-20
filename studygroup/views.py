@@ -1,10 +1,11 @@
 from flask import (g, request, redirect, render_template,
                    session, url_for, jsonify, Blueprint, abort)
 
-from .models import User, Group
+from .models import User, Group, Membership
 from .application import db, meetup
 from .auth import login_required
-from .forms import GroupForm
+from .forms import GroupForm, MembershipForm
+from studygroup.exceptions import FormValidationException
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
 
@@ -32,8 +33,8 @@ def show_groups():
     g.groups = groups
     return render_template('groups.html')
 
-
-@studygroup.route('/group/<id>')
+@studygroup.route('/group/<id>', methods=('POST', 'GET'))
+@login_required
 def show_group(id):
     groups = Group.query.filter_by(id=id)
     if not g.user.is_admin:
@@ -42,7 +43,30 @@ def show_group(id):
     if not group:
         abort(404)
     g.group = group
-    return render_template('show_group.html')
+    if request.method == 'POST':
+        return _show_group_post(id)
+    else:
+        return render_show_group(g.group)
+
+def _show_group_post(group):
+    form = MembershipForm(session.get('user_id'))
+    if form.validate_on_submit():
+        try:
+            form.save()
+        except FormValidationException as e:
+            form.form_errors = e.message
+    return render_show_group(group, form)
+
+def render_show_group(group, form=None):
+    if not form:
+        user_id = session.get('user_id')
+        membership = Membership(
+            user_id=user_id,
+            group_id=group.id
+        )
+        form=MembershipForm(user_id, obj=membership)
+
+    return render_template('show_group.html', form=form)
 
 
 @studygroup.route('/group/new', methods=('GET', 'POST'))
