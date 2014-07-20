@@ -11,6 +11,7 @@ db = SQLAlchemy()
 oauth = OAuth()
 migrate = Migrate()
 
+
 def create_app(debug=True):
     from views import studygroup
 
