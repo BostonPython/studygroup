@@ -1,12 +1,12 @@
 from flask import g
 from flask_wtf import Form
 from wtforms import TextField, TextAreaField, IntegerField, ValidationError
-from wtforms.validators import DataRequired, Required
+from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
 from .application import db
 from .models import Group, Membership, ROLE_GROUP_LEADER
-from .exceptions import GroupFullException, UnAuthorizedException, MembershipException
+from .exceptions import GroupFullException, MembershipException
 
 
 class GroupForm(Form):

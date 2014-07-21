@@ -49,3 +49,6 @@ class StudyGroupTestCase(TestCase):
         """
         with self.client.session_transaction() as session:
             session['user_id'] = user_id
+
+    def assert302(self, response):
+        self.assertStatus(response, 302)

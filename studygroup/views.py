@@ -53,7 +53,7 @@ def render_show_group(group, form=None):
             user_id=user_id,
             group_id=group.id
         )
-        form=MembershipForm(user_id, obj=membership)
+        form = MembershipForm(user_id, obj=membership)
 
     return render_template('show_group.html', form=form)
 

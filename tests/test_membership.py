@@ -1,3 +1,4 @@
+from flask import url_for, Response
 from wtforms import ValidationError
 from studygroup.exceptions import GroupFullException, MembershipException
 from studygroup.forms import MembershipForm
@@ -6,8 +7,86 @@ from studygroup.models import Group, Membership
 from tests.tools import StudyGroupTestCase
 import mock
 
-class MembershipPageTest(StudyGroupTestCase):
-    pass
+
+class GroupBaseTestCase(StudyGroupTestCase):
+
+    def setUp(self):
+        super(GroupBaseTestCase, self).setUp()
+        self.group = Group(
+            name='group name',
+            description='description'
+        )
+        db.session.add(self.group)
+        db.session.commit()
+
+
+class MembershipPageTest(GroupBaseTestCase):
+
+    def test_show_group_auth(self):
+        resp = self.client.get(url_for('studygroup.show_group', id=self.group.id))
+        self.assert302(resp)
+
+    def test_show_group_auth(self):
+        self.login(self.alice_id)
+        resp = self.client.get(url_for('studygroup.show_group', id=self.group.id))
+        self.assert200(resp)
+        self.assertIn('<h1>{}</h1>'.format(self.group.name), resp.data)
+
+    def test_show_group_post_auth(self):
+        resp = self.client.post(url_for('studygroup.show_group', id=self.group.id))
+        self.assert302(resp)
+
+    def test_show_group_post(self):
+        self.login(self.alice_id)
+
+        data = {
+            'group_id': self.group.id,
+        }
+
+        member = Membership.by_group_and_user_ids(self.group.id, self.alice_id)
+        self.assertIsNone(member)
+
+        resp = self.client.post(
+            url_for('studygroup.show_group', id=self.group.id),
+            data=data
+        )
+
+        member = Membership.by_group_and_user_ids(self.group.id, self.alice_id)
+        self.assertIsNotNone(member)
+        self.assert200(resp)
+        self.assertIn('Members: 1', resp.data)
+
+    def test_bad_group(self):
+        self.login(self.alice_id)
+        data = {}
+
+        resp = self.client.post(
+            url_for('studygroup.show_group', id=self.group.id),
+            data=data
+        )
+        self.assert200(resp)
+        self.assertIn('This field is required.', resp.data)
+
+    def test_existing_membership(self):
+        self.login(self.alice_id)
+        membership = Membership(
+            user_id=self.alice_id,
+            group_id=self.group.id
+        )
+        db.session.add(membership)
+        db.session.commit()
+
+        data = {
+            'group_id': self.group.id,
+        }
+
+        resp = self.client.post(
+            url_for('studygroup.show_group', id=self.group.id),
+            data=data
+        )
+        self.assert200(resp)
+        self.assertIn('This member is already in this group', resp.data)
+
 
 class MembershipFormTest(StudyGroupTestCase):
 
@@ -105,16 +184,7 @@ class MembershipFormTest(StudyGroupTestCase):
         self.assertFalse(session.commit.called)
 
 
-class MembershipModelTest(StudyGroupTestCase):
-
-    def setUp(self):
-        super(MembershipModelTest, self).setUp()
-        self.group = Group(
-            name='group',
-            description='description'
-        )
-        db.session.add(self.group)
-        db.session.commit()
+class MembershipModelTest(GroupBaseTestCase):
 
     def test_group_user(self):
         membership = Membership(
