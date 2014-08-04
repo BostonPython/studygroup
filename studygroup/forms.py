@@ -86,10 +86,11 @@ class MembershipForm(Form):
         db.session.commit()
         leader_membership = Membership.by_group_leader(group.id)
 
-        send_join_notification(
-            leader_membership.user,
-            membership.user,
-            group
-        )
+        if leader_membership:
+            send_join_notification(
+                leader_membership.user,
+                membership.user,
+                group
+            )
 
         return membership
