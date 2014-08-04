@@ -7,6 +7,7 @@ from wtforms.widgets import HiddenInput
 from .application import db
 from .models import Group, Membership, ROLE_GROUP_LEADER
 from .exceptions import GroupFullException, MembershipException
+from studygroup.messaging import send_join_notification
 
 
 class GroupForm(Form):
@@ -83,5 +84,12 @@ class MembershipForm(Form):
 
         db.session.add(membership)
         db.session.commit()
+        leader_membership = Membership.by_group_leader(group.id)
+
+        send_join_notification(
+            leader_membership.user,
+            membership.user,
+            group
+        )
 
         return membership

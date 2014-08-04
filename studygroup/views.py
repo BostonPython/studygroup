@@ -5,6 +5,7 @@ from .models import User, Group, Membership
 from .application import db, meetup
 from .auth import login_required
 from .forms import GroupForm, MembershipForm
+from .messaging import  send_message
 from studygroup.exceptions import FormValidationException
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
@@ -119,13 +120,11 @@ def send_message(member_id):
         member = meetup.get('2/member/%s' % member_id)
         return render_template("send_message.html", member=member.data)
     elif request.method == 'POST':
-        response = meetup.post(
-            '2/message',
-            data={
-                'subject': request.form['subject'],
-                'message': request.form['message'],
-                'member_id': request.form['member_id']
-            })
+        response = send_message(
+            request.form['subject'],
+            request.form['member_id'],
+            request.form['message']
+        )
         return jsonify(response.data)
     else:
         return "Invalid Request", 500

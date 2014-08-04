@@ -3,7 +3,7 @@ from wtforms import ValidationError
 from studygroup.exceptions import GroupFullException, MembershipException
 from studygroup.forms import MembershipForm
 from studygroup.application import db
-from studygroup.models import Group, Membership
+from studygroup.models import Group, Membership, User, ROLE_GROUP_LEADER
 from tests.tools import StudyGroupTestCase
 import mock
 
@@ -16,7 +16,22 @@ class GroupBaseTestCase(StudyGroupTestCase):
             name='group name',
             description='description'
         )
+
+        self.leader = User(
+            meetup_member_id=1001,
+            full_name='Leader',
+            is_admin=False
+        )
+
+        self.leader_membership = Membership(
+            user=self.leader,
+            group=self.group,
+            role=ROLE_GROUP_LEADER
+        )
+
         db.session.add(self.group)
+        db.session.add(self.leader)
+        db.session.add(self.leader_membership)
         db.session.commit()
 
 
@@ -54,7 +69,7 @@ class MembershipPageTest(GroupBaseTestCase):
         member = Membership.by_group_and_user_ids(self.group.id, self.alice_id)
         self.assertIsNotNone(member)
         self.assert200(resp)
-        self.assertIn('Members: 1', resp.data)
+        self.assertIn('Members: 2', resp.data)
 
     def test_bad_group(self):
         self.login(self.alice_id)
@@ -135,29 +150,42 @@ class MembershipFormTest(StudyGroupTestCase):
         form._validate_existing_member.assert_called_with(7, 23)
         by_id_with_memberships.assert_called_with('FormData')
 
-    @mock.patch('studygroup.forms.Membership.by_group_and_user_ids')
+    @mock.patch('studygroup.forms.Membership')
     @mock.patch('studygroup.forms.Group.by_id_with_memberships')
     @mock.patch('studygroup.forms.db.session')
-    def test_save(self, session, by_id_with_memberships, by_group_and_user_ids):
+    @mock.patch('studygroup.forms.send_join_notification')
+    def test_save(self, send_join_notification, session, by_id_with_memberships, membership):
+
+        user = mock.Mock(name='user')
+        new_membership = mock.Mock(name='new membership', user=user)
+        membership.return_value = new_membership
+
         group = mock.Mock(name='group', id=7)
         group.is_full.return_value = False
         by_id_with_memberships.return_value = group
-        by_group_and_user_ids.return_value = None
+        membership.by_group_and_user_ids.return_value = None
+
+        leader = mock.Mock()
+        leader_membership = mock.Mock(name='leader', user=leader)
+
+        membership.by_group_leader.return_value = leader_membership
         form = MembershipForm(23)
         form.group_id.data = 88
 
         form.save()
 
         by_id_with_memberships.assert_called_with(88)
-        by_group_and_user_ids.assert_called_with(7, 23)
+        membership.by_group_and_user_ids.assert_called_with(7, 23)
 
         self.assertTrue(session.add.called)
         self.assertTrue(session.commit.called)
+        send_join_notification.assert_called_with(leader, user, group)
 
     @mock.patch('studygroup.forms.Membership.by_group_and_user_ids')
     @mock.patch('studygroup.forms.Group.by_id_with_memberships')
     @mock.patch('studygroup.forms.db.session')
-    def test_save_full_group(self, session, by_id_with_memberships, by_group_and_user_ids):
+    @mock.patch('studygroup.forms.send_join_notification')
+    def test_save_full_group(self, send_join_notification, session, by_id_with_memberships, by_group_and_user_ids):
         group = mock.Mock(name='group', id=7)
         group.is_full.return_value = True
         by_id_with_memberships.return_value = group
@@ -167,11 +195,13 @@ class MembershipFormTest(StudyGroupTestCase):
 
         self.assertFalse(session.add.called)
         self.assertFalse(session.commit.called)
+        self.assertFalse(send_join_notification.called)
 
     @mock.patch('studygroup.forms.Membership.by_group_and_user_ids')
     @mock.patch('studygroup.forms.Group.by_id_with_memberships')
     @mock.patch('studygroup.forms.db.session')
-    def test_save_member(self, session, by_id_with_memberships, by_group_and_user_ids):
+    @mock.patch('studygroup.forms.send_join_notification')
+    def test_save_member(self, send_join_notification, session, by_id_with_memberships, by_group_and_user_ids):
         group = mock.Mock(name='group', id=7)
         group.is_full.return_value = False
         by_id_with_memberships.return_value = group
@@ -182,6 +212,7 @@ class MembershipFormTest(StudyGroupTestCase):
 
         self.assertFalse(session.add.called)
         self.assertFalse(session.commit.called)
+        self.assertFalse(send_join_notification.called)
 
 
 class MembershipModelTest(GroupBaseTestCase):
