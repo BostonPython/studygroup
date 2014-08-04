@@ -40,7 +40,7 @@ class Membership(db.Model):
         return Membership.query.filter_by(
             group_id=group_id,
             role=ROLE_GROUP_LEADER
-        ).first()
+        ).all()
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)

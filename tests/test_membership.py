@@ -196,7 +196,10 @@ class MembershipFormTest(StudyGroupTestCase):
         leader = mock.Mock()
         leader_membership = mock.Mock(name='leader', user=leader)
 
-        membership.by_group_leader.return_value = leader_membership
+        leader2 = mock.Mock()
+        leader_membership2 = mock.Mock(name='leader', user=leader2)
+
+        membership.by_group_leader.return_value = [leader_membership, leader_membership2]
         form = MembershipForm(23)
         form.group_id.data = 88
 
@@ -207,7 +210,12 @@ class MembershipFormTest(StudyGroupTestCase):
 
         self.assertTrue(session.add.called)
         self.assertTrue(session.commit.called)
-        send_join_notification.assert_called_with(leader, user, group)
+
+        calls = [
+            mock.call(leader, user, group),
+            mock.call(leader2, user, group)
+        ]
+        send_join_notification.assert_has_calls(calls, any_order=True)
 
     @mock.patch('studygroup.forms.Membership.by_group_and_user_ids')
     @mock.patch('studygroup.forms.Group.by_id_with_memberships')
@@ -260,3 +268,14 @@ class MembershipModelTest(GroupBaseTestCase):
     def test_group_user_not_found(self):
         actual = Membership.by_group_and_user_ids(self.group.id, self.alice_id,)
         self.assertIsNone(actual)
+
+    def test_by_group_leader_no_leader(self):
+        db.session.delete(self.leader_membership)
+        db.session.commit()
+
+        actual = Membership.by_group_leader(self.group.id)
+        self.assertEqual(actual, [])
+
+    def test_by_group_leader(self):
+        actual = Membership.by_group_leader(self.group.id)
+        self.assertEqual(actual, [self.leader_membership])
