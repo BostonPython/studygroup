@@ -150,6 +150,34 @@ class MembershipFormTest(StudyGroupTestCase):
         form._validate_existing_member.assert_called_with(7, 23)
         by_id_with_memberships.assert_called_with('FormData')
 
+
+    @mock.patch('studygroup.forms.Membership')
+    @mock.patch('studygroup.forms.Group.by_id_with_memberships')
+    @mock.patch('studygroup.forms.db.session')
+    @mock.patch('studygroup.forms.send_join_notification')
+    def test_save_no_leader(self, send_join_notification, session, by_id_with_memberships, membership):
+        user = mock.Mock(name='user')
+        new_membership = mock.Mock(name='new membership', user=user)
+        membership.return_value = new_membership
+
+        group = mock.Mock(name='group', id=7)
+        group.is_full.return_value = False
+        by_id_with_memberships.return_value = group
+        membership.by_group_and_user_ids.return_value = None
+
+        membership.by_group_leader.return_value = None
+        form = MembershipForm(23)
+        form.group_id.data = 88
+
+        form.save()
+
+        by_id_with_memberships.assert_called_with(88)
+        membership.by_group_and_user_ids.assert_called_with(7, 23)
+
+        self.assertTrue(session.add.called)
+        self.assertTrue(session.commit.called)
+        self.assertFalse(send_join_notification.called)
+
     @mock.patch('studygroup.forms.Membership')
     @mock.patch('studygroup.forms.Group.by_id_with_memberships')
     @mock.patch('studygroup.forms.db.session')
