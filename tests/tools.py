@@ -1,11 +1,8 @@
 """
 Tools to help test StudyGroup.
 """
-
-import unittest
-
-from flask import session
 from flask.ext.testing import TestCase
+import mock
 
 from studygroup.application import create_app, db
 from studygroup.models import User
@@ -16,10 +13,19 @@ class StudyGroupTestCase(TestCase):
     Base class for all StudyGroup tests.
     """
     def setUp(self):
+        # If a test needs to send messages the class must define send_messages True
+        # Otherwise no test should send messages.
+        if not getattr(self, 'send_messages', False):
+            self.patcher = mock.patch('studygroup.messaging.meetup.post', spec=True)
+            self.patcher.start()
+
         db.create_all()
         self.alice_id = self.create_user(full_name="Alice B. Admin")
 
     def tearDown(self):
+        if getattr(self, 'send_messages', False):
+            self.patcher.stop()
+
         db.session.remove()
         db.drop_all()
 
@@ -49,3 +55,6 @@ class StudyGroupTestCase(TestCase):
         """
         with self.client.session_transaction() as session:
             session['user_id'] = user_id
+
+    def assert302(self, response):
+        self.assertStatus(response, 302)
