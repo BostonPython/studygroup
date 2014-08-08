@@ -1,0 +1,3 @@
+Congratulations {{ user.full_name }} joined group {{ group.name }},
+
+You now have {{ group.memberships | length }} users going!

@@ -30,7 +30,7 @@ development machine so that it pretends to be
 
 4. Create the database tables:
 
-        $ python manage.py create_tables
+        $ python manage.py db upgrade
 
 5. Start the server:
 
