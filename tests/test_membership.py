@@ -3,7 +3,7 @@ from wtforms import ValidationError
 from studygroup.exceptions import GroupFullException, MembershipException
 from studygroup.forms import MembershipForm
 from studygroup.application import db
-from studygroup.models import Group, Membership, User, ROLE_GROUP_LEADER
+from studygroup.models import Group, GroupStatus, Membership, User, ROLE_GROUP_LEADER
 from tests.tools import StudyGroupTestCase
 import mock
 
@@ -14,7 +14,8 @@ class GroupBaseTestCase(StudyGroupTestCase):
         super(GroupBaseTestCase, self).setUp()
         self.group = Group(
             name='group name',
-            description='description'
+            description='description',
+            status=GroupStatus.active_status()
         )
 
         self.leader = User(

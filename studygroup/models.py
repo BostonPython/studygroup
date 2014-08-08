@@ -50,11 +50,10 @@ class GroupStatus(db.Model):
     display = db.Column(db.String, nullable=False)
 
     @classmethod
-    def by_group_leader(cls, group_id):
-        return Membership.query.filter_by(
-            group_id=group_id,
-            role=ROLE_GROUP_LEADER
-        ).all()
+    def active_status(cls):
+        return GroupStatus.query.filter_by(
+            name='active',
+        ).first()
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -62,10 +61,16 @@ class Group(db.Model):
     description = db.Column(db.String)
     max_members = db.Column(db.Integer, nullable=False,
                             default=settings.DEFAULT_MAX_MEMBERS)
-    status_id = db.Column(db.Integer, db.ForeignKey('group_status.id'),
-                          nullable=False,
-                          default=select([GroupStatus.__table__.c.id]).
-                                  where(GroupStatus.__table__.c.name == 'proposed'))
+    status_id = db.Column(
+        db.Integer,
+        db.ForeignKey('group_status.id'),
+        nullable=False,
+        default=select(
+            [GroupStatus.__table__.c.id]
+        ).where(
+            GroupStatus.__table__.c.name == 'proposed'
+        )
+    )
 
     memberships = db.relationship('Membership', backref='group')
     status = db.relationship('GroupStatus')
