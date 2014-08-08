@@ -19,7 +19,6 @@ def load_user():
     else:
         g.user = None
 
-
 @studygroup.route('/')
 def index():
     return render_template('index.html')
@@ -41,6 +40,7 @@ def show_group(id):
     if not g.user.is_admin:
         groups = Group.filter_proposed(groups)
     group = groups.first()
+
     if not group:
         abort(404)
     g.group = group

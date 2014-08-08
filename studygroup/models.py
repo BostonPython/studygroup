@@ -37,6 +37,12 @@ class Membership(db.Model):
             user_id=user_id
         ).first()
 
+    @classmethod
+    def by_group_leader(cls, group_id):
+        return Membership.query.filter_by(
+            group_id=group_id,
+            role=ROLE_GROUP_LEADER
+        ).all()
 
 class GroupStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)
