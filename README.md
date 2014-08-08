@@ -17,10 +17,8 @@ development machine so that it pretends to be
 
 2. Create a new consumer, with these details:
 
-        Consumer Name: Boston Python Study Groups
-        Application Website: http://dev-studygroup.bostonpython.com
-        De-authorization URL: http://dev-studygroup.bostonpython.com/deauth
-        Redirect URI: http://dev-studygroup.bostonpython.com/
+        Consumer Name: Boston Python Study Groups (Dev)
+        Redirect URI: http://localhost:8080/
 
 3. Create a settings_local.py alongside settings.py, with details from the
     OAuth consumer you just created:
@@ -32,23 +30,17 @@ development machine so that it pretends to be
 
 4. Create the database tables:
 
-        $ sudo python manage.py create_tables
+        $ python manage.py db upgrade
 
-5. You have to be able to visit your dev machine using the domain name
-    "dev-studygroup.bostonpython.com".  The simplest way to do this is to edit
-    /etc/hosts.  Add this line to the file:
+5. Start the server:
 
-        127.0.0.1   dev-studygroup.bostonpython.com
+        $ python run_server.py -p 8080
 
-6. Start the server:
-
-        $ sudo python run_server.py
-
-7. Visit the page in your browser using the URL http://dev-studygroup.bostonpython.com.
+6. Visit the page in your browser using the URL http://localhost:8080.
     You should see the Study Group page, and your server window should show
     URLs being served.
 
-8. If you click the Sign In Now button, it should take you to meetup.com and
+7. If you click the Sign In Now button, it should take you to meetup.com and
     ask you to authorize Boston Python Study Groups.
 
 
