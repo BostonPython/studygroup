@@ -4,6 +4,10 @@ studygroup
 Prototype application to allow creation of study groups within a given Meetup
 group.
 
+This application isn't functional yet. If you want to help, the sketch of how
+it should work is on the wiki: [StudyGroup Sketch](https://github.com/BostonPython/studygroup/wiki/StudyGroup-sketch).
+There are also a few [issues](https://github.com/BostonPython/studygroup/issues)
+describing work that needs to be done.
 
 Developing
 ==========
