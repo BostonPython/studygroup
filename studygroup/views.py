@@ -1,12 +1,15 @@
 from flask import (g, request, redirect, render_template,
-                   session, url_for, jsonify, Blueprint)
+                   session, url_for, jsonify, Blueprint, abort)
 
-from .models import User, Group
+from .models import User, Group, Membership
 from .application import db, meetup
 from .auth import login_required
-from .forms import GroupForm
+from .forms import GroupForm, MembershipForm
+from .messaging import  send_message
+from studygroup.exceptions import FormValidationException
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
+
 
 @studygroup.before_request
 def load_user():
@@ -16,21 +19,56 @@ def load_user():
     else:
         g.user = None
 
-
 @studygroup.route('/')
 def index():
     return render_template('index.html')
 
+
 @studygroup.route('/groups')
 @login_required
 def show_groups():
-    g.groups = Group.all_with_memberships()
+    groups = Group.all_with_memberships()
+    if not g.user.is_admin:
+        groups = Group.filter_proposed(groups)
+    g.groups = groups
     return render_template('groups.html')
 
-@studygroup.route('/group/<id>')
+@studygroup.route('/group/<id>', methods=('POST', 'GET'))
+@login_required
 def show_group(id):
-    g.group = Group.query.filter_by(id=id).first()
-    return render_template('show_group.html')
+    groups = Group.query.filter_by(id=id)
+    if not g.user.is_admin:
+        groups = Group.filter_proposed(groups)
+    group = groups.first()
+
+    if not group:
+        abort(404)
+    g.group = group
+    if request.method == 'POST':
+        return _show_group_post(id)
+    else:
+        return render_show_group(g.group)
+
+def _show_group_post(group):
+    form = MembershipForm(session.get('user_id'))
+    if form.validate_on_submit():
+        try:
+            form.save()
+        except FormValidationException as e:
+            form.form_errors = e.message
+    return render_show_group(group, form)
+
+def render_show_group(group, form=None):
+    if not form:
+        user_id = session.get('user_id')
+        membership = Membership(
+            user_id=user_id,
+            group_id=group.id
+        )
+        form = MembershipForm(user_id, obj=membership)
+
+    return render_template('show_group.html', form=form)
+
 
 @studygroup.route('/group/new', methods=('GET', 'POST'))
 def new_group():
@@ -39,6 +77,7 @@ def new_group():
         group = form.save()
         return redirect(url_for('.show_group', id=group.id))
     return render_template('new_group.html', form=form)
+
 
 @studygroup.route('/join_group', methods=('POST',))
 def join_group():
@@ -81,16 +120,15 @@ def send_message(member_id):
         member = meetup.get('2/member/%s' % member_id)
         return render_template("send_message.html", member=member.data)
     elif request.method == 'POST':
-        response = meetup.post(
-            '2/message',
-            data={
-                'subject': request.form['subject'],
-                'message': request.form['message'],
-                'member_id': request.form['member_id']
-            })
+        response = send_message(
+            request.form['subject'],
+            request.form['member_id'],
+            request.form['message']
+        )
         return jsonify(response.data)
     else:
         return "Invalid Request", 500
+
 
 @studygroup.route('/boom')
 def boom():

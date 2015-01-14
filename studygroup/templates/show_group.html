@@ -1,4 +1,5 @@
 {% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% block title %}Studygroup | Groups{% endblock %}
 
 {% block styles %}
@@ -27,6 +28,26 @@
 
         <div>
             {{ g.group.description }}
+        </div>
+        <div>
+            <p>Members: {{ g.group.memberships | length }}</p>
+        </div>
+        {% if form.errors %}
+            <ul class="errors">
+                {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                        <li>{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="actions">
+            <form class="col-lg-12 form form-horizontal" method="post" role="form">
+                {{ form.hidden_tag() }}
+                {{ wtf.form_errors(form, hiddens="only") }}
+                <button type="submit" class="btn btn-default">Join</button>
+            </form>
         </div>
 
         <div class="footer">
