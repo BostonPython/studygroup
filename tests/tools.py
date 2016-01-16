@@ -20,6 +20,9 @@ class StudyGroupTestCase(TestCase):
     Base class for all StudyGroup tests.
     """
     def setUp(self):
+        # Remove if something is created
+        db.session.remove()
+        db.drop_all()
         # If a test needs to send messages the class must define send_messages True
         # Otherwise no test should send messages.
         if not getattr(self, 'send_messages', False):
