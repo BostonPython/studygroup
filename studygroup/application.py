@@ -14,13 +14,14 @@ migrate = Migrate()
 
 def create_app(debug=True):
     from views import studygroup
-
+    from groups import groups
     app = Flask(__name__)
     app.debug = debug
     app.secret_key = 'development'
     app.config.from_object(settings)
 
     app.register_blueprint(studygroup)
+    app.register_blueprint(groups)
 
     Bootstrap(app)
     db.init_app(app)

@@ -1,6 +1,6 @@
 from flask import g
 from flask_wtf import Form
-from wtforms import TextField, TextAreaField, IntegerField, ValidationError
+from wtforms import TextField, TextAreaField, DateField, IntegerField, ValidationError, DateTimeField, BooleanField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
@@ -14,12 +14,17 @@ class GroupForm(Form):
     name = TextField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     max_members = TextField('Max Members', validators=[DataRequired()])
+    max_members = TextField('Max Members', validators=[DataRequired()])
+    start_date = DateField('Starts At', format='%m/%d/%Y', validators=[DataRequired()])
+    active = BooleanField('Active?', default=False, validators=[DataRequired()])
 
     def save(self):
+        import ipdb; ipdb.set_trace()
         group = Group(
             name=self.name.data,
             description=self.description.data,
-            max_members=self.max_members.data
+            max_members=self.max_members.data,
+            active = self.active
         )
 
         membership = Membership(

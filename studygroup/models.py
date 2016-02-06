@@ -1,6 +1,7 @@
 """
 Data models for StudyGroups
 """
+import datetime
 from sqlalchemy import UniqueConstraint
 
 from .application import db
@@ -8,6 +9,7 @@ import settings
 
 ROLE_MEMBER = 1
 ROLE_GROUP_LEADER = 10
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,8 +48,26 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
     description = db.Column(db.String)
-    max_members = db.Column(db.Integer, nullable=False,
-                            default=settings.DEFAULT_MAX_MEMBERS)
+    max_members = db.Column(
+        db.Integer, nullable=False,
+        default=settings.DEFAULT_MAX_MEMBERS
+    )
+
+    start_date = db.Column(
+        db.Date,
+        nullable=False
+    )
+
+    start_time = db.Column(
+        db.Time, nullable=False,
+        default=datetime.time(hour=18)
+    )
+
+    active = db.Column(
+        db.Boolean,
+        nullable=False,
+        default=False
+    )
 
     memberships = db.relationship("Membership", backref="group")
 

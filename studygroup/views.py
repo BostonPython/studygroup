@@ -1,14 +1,13 @@
 from flask import (g, request, redirect, render_template,
                    session, url_for, jsonify, Blueprint)
 
-from .models import User, Group, Membership
+from .models import User, Group
 from .application import db, meetup
 from .auth import login_required
-from .forms import GroupForm, MembershipForm
 from .messaging import  send_message
-from studygroup.exceptions import FormValidationException
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
+
 
 @studygroup.before_request
 def load_user():
@@ -21,54 +20,9 @@ def load_user():
 
 @studygroup.route('/')
 def index():
-    return render_template('index.html')
-
-@studygroup.route('/groups')
-@login_required
-def show_groups():
-    g.groups = Group.all_with_memberships()
-    return render_template('groups.html')
-
-@studygroup.route('/group/<id>', methods=('POST', 'GET'))
-@login_required
-def show_group(id):
-    g.group = Group.query.filter_by(id=id).first()
-    if request.method == 'POST':
-        return _show_group_post(id)
-    else:
-        return render_show_group(g.group)
-
-def _show_group_post(group):
-    form = MembershipForm(session.get('user_id'))
-    if form.validate_on_submit():
-        try:
-            form.save()
-        except FormValidationException as e:
-            form.form_errors = e.message
-    return render_show_group(group, form)
-
-def render_show_group(group, form=None):
-    if not form:
-        user_id = session.get('user_id')
-        membership = Membership(
-            user_id=user_id,
-            group_id=group.id
-        )
-        form = MembershipForm(user_id, obj=membership)
-
-    return render_template('show_group.html', form=form)
-
-@studygroup.route('/group/new', methods=('GET', 'POST'))
-def new_group():
-    form = GroupForm()
-    if form.validate_on_submit():
-        group = form.save()
-        return redirect(url_for('.show_group', id=group.id))
-    return render_template('new_group.html', form=form)
-
-@studygroup.route('/join_group', methods=('POST',))
-def join_group():
-    pass
+    return render_template(
+        'index.html', groups=Group.all_with_memberships()
+    )
 
 
 @studygroup.route('/members')
@@ -116,6 +70,7 @@ def send_message(member_id):
     else:
         return "Invalid Request", 500
 
+
 @studygroup.route('/boom')
 def boom():
     raise Exception('BOOM')
@@ -135,7 +90,7 @@ def logout():
 @studygroup.route('/login/authorized')
 @meetup.authorized_handler
 def authorized(resp):
-    if resp is None:
+    if resp is None or not isinstance(resp, dict):
         return 'Access denied: reason=%s error=%s' % (
             request.args['error_reason'],
             request.args['error_description']
@@ -154,7 +109,6 @@ def authorized(resp):
         )
         db.session.add(user)
         db.session.commit()
-
     session['user_id'] = user.id
     return redirect(url_for('.index'))
 

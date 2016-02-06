@@ -7,7 +7,7 @@
         <div class="header">
             <ul class="nav nav-pills pull-right">
                 <li><a href="{{ url_for('.index') }}">Home</a></li>
-                <li class="active"><a href="{{ url_for('.show_groups') }}">Groups</a></li>
+                <li class="active"><a href="{{ url_for('group.show_groups') }}">Groups</a></li>
                 <li><a href="{{ url_for('.show_members') }}">Members</a></li>
                 {% if g.user %}
                 <li><a href="{{ url_for('.logout') }}">Logout</a></li>
