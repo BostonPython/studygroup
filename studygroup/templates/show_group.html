@@ -1,12 +1,6 @@
-{% extends "bootstrap/base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+{% import "wtf_macro.html" as wtf %}
 {% block title %}Studygroup | Groups{% endblock %}
-
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="{{url_for('.static', filename='css/jumbotron-narrow.css')}}">
-{% endblock %}
 
 {% block content %}
     <div class="container">

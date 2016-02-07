@@ -36,15 +36,30 @@ development machine so that it pretends to be
 
         $ python manage.py db upgrade
 
-5. Start the server:
+5. Install The javascript builder:
+        Depending on your operating system install the npm package
+        (OSX) $
+            * Brew
+                - $ brew install npm
+            * Mac Ports
+                - $ port install npm
+
+        (Linux)
+            $ apt-get install npm
+
+        $ npm install
+        $ bower install
+        $ gulp
+
+6. Start the server:
 
         $ python run_server.py -p 8080
 
-6. Visit the page in your browser using the URL http://localhost:8080.
+7. Visit the page in your browser using the URL http://localhost:8080.
     You should see the Study Group page, and your server window should show
     URLs being served.
 
-7. If you click the Sign In Now button, it should take you to meetup.com and
+8. If you click the Sign In Now button, it should take you to meetup.com and
     ask you to authorize Boston Python Study Groups.
 
 

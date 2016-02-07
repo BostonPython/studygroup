@@ -40,3 +40,10 @@ settings_local.py*
 
 # PyCharm
 .idea
+
+# dev assets
+studygroup/static
+assets/bower_components/
+
+# node modules
+node_modules/
