@@ -73,7 +73,12 @@ class Group(db.Model):
 
     @classmethod
     def all_with_memberships(cls):
-        return Group.query.options(db.joinedload(Group.memberships)).all()
+        return Group.query.filter_by(active=1)\
+            .options(db.joinedload(Group.memberships)).all()
+
+    @classmethod
+    def all_actives(cls):
+        return Group.query.filter_by(active=1).all()
 
     @classmethod
     def by_id_with_memberships(cls, id):

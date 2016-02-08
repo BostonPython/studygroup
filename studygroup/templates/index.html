@@ -2,63 +2,36 @@
 {% block title %}Studygroup | a Boston Python Project{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="header">
-            <ul class="nav nav-pills pull-right">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="{{ url_for('group.show_groups') }}">Groups</a></li>
-                <li><a href="{{ url_for('studygroup.show_members') }}">Members</a></li>
-                {% if g.user %}
-                <li><a href="{{ url_for('studygroup.logout') }}">Logout</a></li>
-                {% endif %}
-            </ul>
-            <h3 class="text-muted">Studygroup</h3>
-        </div>
+    <div class="jumbotron">
+        <h1>Studygroup</h1>
 
-        <div class="jumbotron">
-            <h1>Studygroup</h1>
+        <p class="lead">
+            Create and manage small study groups inside Boston Python
+        </p>
 
-            <p class="lead">
-                Create and manage small study groups inside Boston Python
-            </p>
+        {% if not g.user %}
+        <p>
+            <a class="btn btn-lg btn-success"
+               href="{{ url_for('studygroup.login') }}"
+               role="button">Sign In Now</a>
+        </p>
+        {% else %}
+        <p>
+            Welcome, {{ g.user.full_name }}
+        </p>
+        {% endif %}
+    </div>
 
-            {% if not g.user %}
-            <p>
-                <a class="btn btn-lg btn-success"
-                   href="{{ url_for('studygroup.login') }}"
-                   role="button">Sign In Now</a>
-            </p>
-            {% else %}
-            <p>
-                Welcome, {{ g.user.full_name }}
-            </p>
-            {% endif %}
-        </div>
-
+    {% for group in groups %}
         <div class="row marketing">
             <div class="col-lg-6">
-                <h4></h4>
-
-                <p>Donec id elit non mi porta gravida at eget metus. Maecenas
-                    faucibus mollis interdum.</p>
-
-                <h4>Subheading</h4>
-
-                <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-                    Cras mattis consectetur purus sit amet fermentum.</p>
-
-                <h4>Subheading</h4>
-
-                <p>Maecenas sed diam eget risus varius blandit sit amet non
-                    magna.</p>
+                <h4><a href="{{ url_for('group.show_group', id=group.id) }}">{{ group.name }}</a></h4>
+                <p>{{ group.description }}</p>
+                <h3>{{ group.max_members}}</h3>
+                {% if group.is_full() %}
+                <p>Full</p>
+                {% endif %}
             </div>
-
         </div>
-
-        <div class="footer">
-            <p>&copy; <a href="http://bostonpython.com">Boston Python</a> User Group 2014</p>
-        </div>
-
-    </div> <!-- /container -->
-
+    {% endfor %}
 {% endblock %}

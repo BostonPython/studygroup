@@ -3,13 +3,14 @@ Tools to help test StudyGroup.
 """
 
 import os.path
+import datetime
 
 import flask.ext.migrate
 from flask.ext.testing import TestCase
 import mock
 
 from studygroup.application import create_app, db
-from studygroup.models import User
+from studygroup.models import User, Group
 
 
 DB_PATH = 'sqlite:///' + os.path.dirname(__file__) + '/../test.db'
@@ -64,6 +65,25 @@ class StudyGroupTestCase(TestCase):
         db.session.add(user)
         db.session.commit()
         return user.id
+
+    def create_group(
+            self,
+            name,
+            description,
+            max_members=10,
+            start_date=datetime.date.today(),
+            start_time=datetime.datetime.now().time(),
+            active = True):
+        group = Group(
+            name=name,
+            description=description,
+            max_members=max_members,
+            start_date=start_date,
+            start_time=start_time,
+            active=active
+        )
+        db.session.add(group)
+        return group
 
     def login(self, user_id):
         """

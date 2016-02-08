@@ -21,7 +21,7 @@ def load_user():
 @studygroup.route('/')
 def index():
     return render_template(
-        'index.html', groups=Group.all_with_memberships()
+        'index.html', groups=Group.all_actives()
     )
 
 

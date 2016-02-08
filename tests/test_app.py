@@ -1,7 +1,5 @@
 import datetime
 from flask import url_for
-import mock
-
 from .tools import StudyGroupTestCase
 
 from studygroup.models import Group
