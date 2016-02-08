@@ -4,7 +4,7 @@
     {% if not with_label %}
         {% set placeholder = field.label.text %}
     {% endif %}
-    <div class="form-group {% if field.errors %}error{% endif %}">
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
         {% if with_label %}
             <label for="{{ field.id }}" class="control-label">
                 {{ field.label.text }}{% if field.flags.required %} *{% endif %}:
@@ -26,23 +26,29 @@
 
         {% else %}
        
-            {% if field.type in ('TextField', 'TextAreaField', 'PasswordField') %}
+            {% if field.type in ('TextField', 'TextAreaField', 'PasswordField', 'DateField', 'DateTimeField') %}
                 {% set class_ = class_ + ' input-xlarge form-control' %}
-          
             {% elif field.type == 'FileField' %}
                 {% set class_ = class_ + ' input-file form-control' %}
-            {% endif %}
+            {%  endif %}
 
             {% if field.type == 'SelectField' %}
                 {{ field(class_=class_, **kwargs) }}
+            {% elif field.type in ['DateField', 'DateTimeField'] %}
+                <div class="input-group date" data-provide="{% if field.type == 'DateField' %}datepicker{% else %}datetimepicker{% endif %}">
+                    {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar">
+                        </span>
+                    </span>
+                </div>
             {% else %}
-              
-            {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
+                {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
             {% endif %}
       
         {% endif %}
         {% if field.errors %}
-            <span class="error help-inline">{{ field.errors|join(', ') }}</span>
+            <small class="help-block">{{ field.errors|join(', ') }}</small>
         {% endif %}
         {% if field.description %}
             <p class="help-block">{{ field.description|safe }}</p>

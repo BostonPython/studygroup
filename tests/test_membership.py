@@ -1,4 +1,4 @@
-from flask import url_for, Response
+from flask import url_for
 from wtforms import ValidationError
 from studygroup.exceptions import GroupFullException, MembershipException
 from studygroup.forms import MembershipForm
@@ -38,17 +38,17 @@ class GroupBaseTestCase(StudyGroupTestCase):
 class MembershipPageTest(GroupBaseTestCase):
 
     def test_show_group_auth(self):
-        resp = self.client.get(url_for('studygroup.show_group', id=self.group.id))
+        resp = self.client.get(url_for('group.show_group', id=self.group.id))
         self.assert302(resp)
 
     def test_show_group_auth(self):
         self.login(self.alice_id)
-        resp = self.client.get(url_for('studygroup.show_group', id=self.group.id))
+        resp = self.client.get(url_for('group.show_group', id=self.group.id))
         self.assert200(resp)
         self.assertIn('<h1>{}</h1>'.format(self.group.name), resp.data)
 
     def test_show_group_post_auth(self):
-        resp = self.client.post(url_for('studygroup.show_group', id=self.group.id))
+        resp = self.client.post(url_for('group.show_group', id=self.group.id))
         self.assert302(resp)
 
     def test_show_group_post(self):
@@ -62,7 +62,7 @@ class MembershipPageTest(GroupBaseTestCase):
         self.assertIsNone(member)
 
         resp = self.client.post(
-            url_for('studygroup.show_group', id=self.group.id),
+            url_for('group.show_group', id=self.group.id),
             data=data
         )
 
@@ -76,7 +76,7 @@ class MembershipPageTest(GroupBaseTestCase):
         data = {}
 
         resp = self.client.post(
-            url_for('studygroup.show_group', id=self.group.id),
+            url_for('group.show_group', id=self.group.id),
             data=data
         )
         self.assert200(resp)
@@ -96,7 +96,7 @@ class MembershipPageTest(GroupBaseTestCase):
         }
 
         resp = self.client.post(
-            url_for('studygroup.show_group', id=self.group.id),
+            url_for('group.show_group', id=self.group.id),
             data=data
         )
         self.assert200(resp)

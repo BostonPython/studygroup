@@ -14,17 +14,17 @@ class GroupForm(Form):
     name = TextField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     max_members = TextField('Max Members', validators=[DataRequired()])
-    max_members = TextField('Max Members', validators=[DataRequired()])
-    start_date = DateField('Starts At', format='%m/%d/%Y', validators=[DataRequired()])
-    active = BooleanField('Active?', default=False, validators=[DataRequired()])
+    start_date = DateTimeField('Starts At', format='%m/%d/%Y %H:%M', validators=[DataRequired()])
+    active = BooleanField('Active?', default=False)
 
     def save(self):
-        import ipdb; ipdb.set_trace()
         group = Group(
             name=self.name.data,
             description=self.description.data,
             max_members=self.max_members.data,
-            active = self.active
+            start_date=self.start_date.data.date(),
+            start_time=self.start_date.data.time(),
+            active=1 if self.active else 0
         )
 
         membership = Membership(

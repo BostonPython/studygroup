@@ -12,11 +12,14 @@ var LIBS_SCRIPTS = [
     'assets/bower_components/jquery/dist/jquery.js',
     'assets/bower_components/bootstrap/dist/js/bootstrap.js',
     'assets/bower_components/lodash/lodash.min.js',
+    'assets/bower_components/moment/min/moment.min.js',
+    'assets/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js'
 ];
 
 var LIBS_CSS = [
     'assets/bower_components/font-awesome/css/font-awesome.css',
     'assets/bower_components/bootstrap/dist/css/bootstrap.css',
+    'assets/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
     'assets/css/*.css',
 ];
 
