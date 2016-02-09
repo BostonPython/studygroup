@@ -37,6 +37,7 @@ development machine so that it pretends to be
         $ python manage.py db upgrade
 
 5. Install The javascript builder:
+
         Depending on your operating system install the npm package
         (OSX) $
             * Brew

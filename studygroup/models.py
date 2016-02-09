@@ -44,6 +44,7 @@ class Membership(db.Model):
             role=ROLE_GROUP_LEADER
         ).all()
 
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True)
@@ -87,3 +88,7 @@ class Group(db.Model):
 
     def is_full(self):
         return len(self.memberships) >= self.max_members
+
+    @property
+    def empty_seats(self):
+        return self.max_members - len(self.memberships)

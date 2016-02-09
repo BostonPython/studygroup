@@ -61,3 +61,22 @@ class GroupModelTest(StudyGroupTestCase):
         db.session.commit()
         group = Group.by_id_with_memberships(group.id)
         self.assertTrue(group.is_full())
+
+    def test_empty_seats(self):
+        group = self.create_group(
+            'DeadPool vs Wolverine',
+            'Lets figure out who is the most undead?',
+            max_members=3,
+            start_date=datetime.date(2012, 10, 10),
+            start_time=datetime.time(14, 22),
+            active=True
+        )
+        membership = Membership(
+            user_id=self.alice_id,
+            group=group,
+            role=10
+        )
+        db.session.add(membership)
+        db.session.commit()
+        group = Group.by_id_with_memberships(group.id)
+        self.assertEqual(group.empty_seats, 2)

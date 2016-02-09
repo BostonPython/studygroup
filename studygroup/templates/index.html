@@ -21,17 +21,13 @@
         </p>
         {% endif %}
     </div>
-
+    <div class="row">
     {% for group in groups %}
-        <div class="row marketing">
-            <div class="col-lg-6">
-                <h4><a href="{{ url_for('group.show_group', id=group.id) }}">{{ group.name }}</a></h4>
-                <p>{{ group.description }}</p>
-                <h3>{{ group.max_members}}</h3>
-                {% if group.is_full() %}
-                <p>Full</p>
-                {% endif %}
-            </div>
+        <div class="col-lg-6">
+            <h4><a href="{{ url_for('group.show_group', id=group.id) }}">{{ group.name }}</a></h4>
+            <p>{{ group.description }}</p>
+            <h5>{{ group.empty_seats }} seats of {{ group.max_members}} left</h5>
         </div>
     {% endfor %}
+    </div>
 {% endblock %}
