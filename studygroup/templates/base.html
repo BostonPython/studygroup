@@ -1,0 +1,67 @@
+{% block doc -%}
+<!DOCTYPE html>
+<html{% block html_attribs %}{% endblock html_attribs %}>
+{%- block html %}
+  <head>
+    {%- block head %}
+    <title>{% block title %}{% endblock title %}</title>
+
+    {%- block metas %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- endblock metas %}
+
+    {%- block fonts  %}
+    {%- endblock fonts %}
+
+    {%- block styles %}
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dev/css/bootstrap.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dev/css/font-awesome.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dev/css/jumbotron-narrow.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dev/css/bootstrap-datetimepicker.css') }}">
+    {%- endblock styles %}
+    <!-- Scripts -->
+    {%- block scripts  %}
+        <script src="{{ url_for('static', filename='dev/js/jquery.js') }}"></script>
+        <script src="{{ url_for('static', filename='dev/js/bootstrap.js') }}"></script>
+        <script src="{{ url_for('static', filename='dev/js/moment.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='dev/js/bootstrap-datetimepicker.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='dev/js/app.js') }}"></script>
+    {% endblock scripts -%}
+
+    {%- endblock head %}
+  </head>
+  <body{% block body_attribs %}{% endblock body_attribs %}>
+    {% block body -%}
+    <div class="container">
+        {% block navbar -%}
+            <div class="header">
+                <ul class="nav nav-pills pull-right">
+                    <li><a href="{{ url_for('studygroup.index') }}">Home</a></li>
+                    <li><a href="{{ url_for('group.show_groups') }}">Groups</a></li>
+                    <li><a href="{{ url_for('studygroup.show_members') }}">Members</a></li>
+                    {% if g.user %}
+                    <li><a href="{{ url_for('studygroup.logout') }}">Logout</a></li>
+                    {% endif %}
+                </ul>
+                <h3 class="text-muted">Studygroup</h3>
+            </div>
+        {%- endblock navbar %}
+
+        {% block content -%}
+
+        {%- endblock content %}
+
+        {% block body_scripts %}
+        {%- endblock body_scripts %}
+
+        {% block footer %}
+            <div class="footer">
+                <p>&copy; <a href="http://bostonpython.com">Boston Python</a> User Group 2014</p>
+            </div>
+        {% endblock footer %}
+    </div>
+    {%- endblock body %}
+  </body>
+{%- endblock html %}
+</html>
+{% endblock doc -%}

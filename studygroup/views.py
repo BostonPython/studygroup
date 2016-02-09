@@ -4,9 +4,10 @@ from flask import (g, request, redirect, render_template,
 from .models import User, Group
 from .application import db, meetup
 from .auth import login_required
-from .forms import GroupForm
+from .messaging import  send_message
 
 studygroup = Blueprint("studygroup", __name__, static_folder='static')
+
 
 @studygroup.before_request
 def load_user():
@@ -19,30 +20,9 @@ def load_user():
 
 @studygroup.route('/')
 def index():
-    return render_template('index.html')
-
-@studygroup.route('/groups')
-@login_required
-def show_groups():
-    g.groups = Group.all_with_memberships()
-    return render_template('groups.html')
-
-@studygroup.route('/group/<id>')
-def show_group(id):
-    g.group = Group.query.filter_by(id=id).first()
-    return render_template('show_group.html')
-
-@studygroup.route('/group/new', methods=('GET', 'POST'))
-def new_group():
-    form = GroupForm()
-    if form.validate_on_submit():
-        group = form.save()
-        return redirect(url_for('.show_group', id=group.id))
-    return render_template('new_group.html', form=form)
-
-@studygroup.route('/join_group', methods=('POST',))
-def join_group():
-    pass
+    return render_template(
+        'index.html', groups=Group.all_actives()
+    )
 
 
 @studygroup.route('/members')
@@ -81,16 +61,15 @@ def send_message(member_id):
         member = meetup.get('2/member/%s' % member_id)
         return render_template("send_message.html", member=member.data)
     elif request.method == 'POST':
-        response = meetup.post(
-            '2/message',
-            data={
-                'subject': request.form['subject'],
-                'message': request.form['message'],
-                'member_id': request.form['member_id']
-            })
+        response = send_message(
+            request.form['subject'],
+            request.form['member_id'],
+            request.form['message']
+        )
         return jsonify(response.data)
     else:
         return "Invalid Request", 500
+
 
 @studygroup.route('/boom')
 def boom():
@@ -111,7 +90,7 @@ def logout():
 @studygroup.route('/login/authorized')
 @meetup.authorized_handler
 def authorized(resp):
-    if resp is None:
+    if resp is None or not isinstance(resp, dict):
         return 'Access denied: reason=%s error=%s' % (
             request.args['error_reason'],
             request.args['error_description']
@@ -130,7 +109,6 @@ def authorized(resp):
         )
         db.session.add(user)
         db.session.commit()
-
     session['user_id'] = user.id
     return redirect(url_for('.index'))
 

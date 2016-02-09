@@ -1,0 +1,67 @@
+{% macro render_field(field) -%}
+    {% set with_label = kwargs.pop('with_label', False) %}
+    {% set placeholder = '' %}
+    {% if not with_label %}
+        {% set placeholder = field.label.text %}
+    {% endif %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+        {% if with_label %}
+            <label for="{{ field.id }}" class="control-label">
+                {{ field.label.text }}{% if field.flags.required %} *{% endif %}:
+            </label>
+        {% endif %}
+        
+        {% set class_ = kwargs.pop('class_', '') %}
+        {% if field.flags.required %}
+            {% set class_ = class_ + ' required' %}
+        {% endif %}
+
+        {% if field.type == 'BooleanField' %}
+            <div class="checkbox">
+                <label>
+                    {{ field(class_=class_, **kwargs) }}
+                    {{ field.label.text|safe }}
+                </label>
+            </div>
+
+        {% else %}
+       
+            {% if field.type in ('TextField', 'TextAreaField', 'PasswordField', 'DateField', 'DateTimeField') %}
+                {% set class_ = class_ + ' input-xlarge form-control' %}
+            {% elif field.type == 'FileField' %}
+                {% set class_ = class_ + ' input-file form-control' %}
+            {%  endif %}
+
+            {% if field.type == 'SelectField' %}
+                {{ field(class_=class_, **kwargs) }}
+            {% elif field.type in ['DateField', 'DateTimeField'] %}
+                <div class="input-group date" data-provide="{% if field.type == 'DateField' %}datepicker{% else %}datetimepicker{% endif %}">
+                    {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar">
+                        </span>
+                    </span>
+                </div>
+            {% else %}
+                {{ field(class_=class_, placeholder=placeholder, **kwargs) }}
+            {% endif %}
+      
+        {% endif %}
+        {% if field.errors %}
+            <small class="help-block">{{ field.errors|join(', ') }}</small>
+        {% endif %}
+        {% if field.description %}
+            <p class="help-block">{{ field.description|safe }}</p>
+        {% endif %}
+    </div>
+{%- endmacro %}
+
+{% macro form_errors(form, hiddens=True) %}
+  {%- if form.errors %}
+    {%- for fieldname, errors in form.errors.items() %}
+        {%- for error in errors %}
+          <p class="error">{{error}}</p>
+        {%- endfor %}
+    {%- endfor %}
+  {%- endif %}
+{%- endmacro %}

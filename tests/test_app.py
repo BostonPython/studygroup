@@ -1,5 +1,5 @@
+import datetime
 from flask import url_for
-
 from .tools import StudyGroupTestCase
 
 from studygroup.models import Group
@@ -21,10 +21,11 @@ class HomePageTest(StudyGroupTestCase):
 
 
 class GroupCreationTest(StudyGroupTestCase):
+
     def test_make_a_group(self):
         self.login(self.alice_id)
         # Open the new group page.
-        resp = self.client.get(url_for('studygroup.new_group'))
+        resp = self.client.get(url_for('group.new_group'))
         self.assert200(resp)
 
         # Submit the new group form.
@@ -32,13 +33,18 @@ class GroupCreationTest(StudyGroupTestCase):
             'description': "A group!",
             'max_members': "10",
             'name': "The Group",
+            'active': True,
+            'start_date': '12/25/2002 14:22'
         }
-        resp = self.client.post(url_for('studygroup.new_group'), data=data, follow_redirects=False)
+        resp = self.client.post(url_for('group.new_group'), data=data, follow_redirects=False)
         # It should take us to look at the new group.
-        self.assert_redirects(resp, url_for('studygroup.show_group', id=1))
+        self.assert_redirects(resp, url_for('group.show_group', id=1))
 
         # The new group should have the right data.
         g1 = Group.query.filter_by(id=1).first()
         self.assertEqual(g1.name, "The Group")
         self.assertEqual(g1.description, "A group!")
         self.assertEqual(g1.max_members, 10)
+        self.assertEqual(g1.start_date, datetime.date(2002, 12, 25))
+        self.assertEqual(g1.start_time, datetime.time(14,22))
+        self.assertEqual(g1.active, 1)
