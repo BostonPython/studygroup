@@ -1,4 +1,6 @@
 language: python
+env:
+  - MEETUP_OAUTH_SECRET=secret MEETUP_OAUTH_KEY=key
 python:
     - "2.7"
 install:
